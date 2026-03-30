@@ -1,0 +1,17 @@
+langchain
+langchain-core
+langchain-community
+
+# Providers
+langchain-google-genai
+langchain-groq
+langchain-mistralai
+
+# Base SDKs (recommended)
+google-generativeai
+groq
+mistralai
+
+# Utils
+python-dotenv
+requests
