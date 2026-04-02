@@ -8,6 +8,25 @@ from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 
 
 
+
+st.title("🌐 Multi-Aura Hub")
+# ── CONFIGURATION ─────────────────────────────────────────────────────────────
+
+MODELS_CONFIG = {
+    "Mistral (Small)": {"provider": "mistral", "model": "mistral-small-2603"},
+    "Gemini (Flash)": {"provider": "google", "model": "gemini-2.5-flash-lite"},
+    "Llama 3 (Groq)": {"provider": "groq", "model": "llama-3.3-70b-versatile"},
+}
+
+PERSONAS = {
+    "Funny":      {"icon": "😄", "prompt": "You are a hilarious and witty assistant. Crack jokes and keep things fun."},
+    "Aggressive": {"icon": "🔥", "prompt": "You are an aggressive, blunt assistant. No sugarcoating. Direct and intense."},
+    "Socratic":   {"icon": "🧠", "prompt": "You are a Socratic assistant. Guide users via thoughtful questions and philosophy."},
+    "Creative":   {"icon": "🎨", "prompt": "You are a wildly creative assistant. Use vivid metaphors and poetic language."},
+    "Professional": {"icon": "💼", "prompt": "You are a professional, concise, and formal corporate assistant."}
+}
+
+
 @st.cache_resource
 def load_llm(model_option):
     config = MODELS_CONFIG[model_option]
@@ -22,22 +41,7 @@ def show():
 # Load Environment Variables
 
 
-    st.title("🌐 Multi-Aura Hub")
-    # ── CONFIGURATION ─────────────────────────────────────────────────────────────
-
-    MODELS_CONFIG = {
-        "Mistral (Small)": {"provider": "mistral", "model": "mistral-small-2603"},
-        "Gemini (Flash)": {"provider": "google", "model": "gemini-2.5-flash-lite"},
-        "Llama 3 (Groq)": {"provider": "groq", "model": "llama-3.3-70b-versatile"},
-    }
-
-    PERSONAS = {
-        "Funny":      {"icon": "😄", "prompt": "You are a hilarious and witty assistant. Crack jokes and keep things fun."},
-        "Aggressive": {"icon": "🔥", "prompt": "You are an aggressive, blunt assistant. No sugarcoating. Direct and intense."},
-        "Socratic":   {"icon": "🧠", "prompt": "You are a Socratic assistant. Guide users via thoughtful questions and philosophy."},
-        "Creative":   {"icon": "🎨", "prompt": "You are a wildly creative assistant. Use vivid metaphors and poetic language."},
-        "Professional": {"icon": "💼", "prompt": "You are a professional, concise, and formal corporate assistant."}
-    }
+   
 
     # ── SESSION STATE ─────────────────────────────────────────────────────────────
     if "messages" not in st.session_state:
