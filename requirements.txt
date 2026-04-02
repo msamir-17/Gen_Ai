@@ -1,20 +1,14 @@
 langchain
 langchain-core
 langchain-community
-
-# Providers
 langchain-google-genai
 langchain-groq
 langchain-mistralai
-langchain_huggingface
-# Base SDKs (recommended)
+langchain-huggingface
 google-generativeai
 groq
 mistralai
-
-# Utils
 python-dotenv
 requests
-pydantic
-
 streamlit
+pydantic
