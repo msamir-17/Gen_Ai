@@ -29,106 +29,114 @@ st.markdown("""
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Mono:wght@300;400;500&display=swap');
 
 html, body, [data-testid="stAppViewContainer"] {
-    background: #0e0e11 !important;
+    background: #0c0c10 !important;
     font-family: 'DM Mono', monospace;
-    color: #c9c9d3;
+    color: #c0c0d0;
 }
 
-[data-testid="stAppViewContainer"] {
-    background: #0e0e11 !important;
+/* ── Always show sidebar, hide collapse toggle ── */
+[data-testid="stSidebar"] {
+    display: block !important;
+    min-width: 220px !important;
+    max-width: 240px !important;
 }
+section[data-testid="stSidebarCollapsedControl"] { display: none !important; }
+[data-testid="collapsedControl"] { display: none !important; }
+button[kind="header"] { display: none !important; }
 
 [data-testid="stHeader"], header { background: transparent !important; }
 [data-testid="stToolbar"], #MainMenu, footer { display: none !important; }
 
 /* ── SIDEBAR ── */
 [data-testid="stSidebar"] {
-    background: #111116 !important;
-    border-right: 1px solid rgba(255,255,255,0.06) !important;
+    background: #0f0f14 !important;
+    border-right: 1px solid #18181f !important;
 }
-
 [data-testid="stSidebar"] > div:first-child {
-    padding: 2rem 1.2rem;
+    padding: 2rem 1.3rem 1.5rem;
 }
 
-/* Sidebar title */
-.sidebar-brand {
+/* Brand */
+.sb-brand {
     font-family: 'Syne', sans-serif;
     font-weight: 800;
-    font-size: 1.15rem;
+    font-size: 1.05rem;
     letter-spacing: -0.02em;
-    color: #e8e8f0;
-    margin-bottom: 0.3rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    color: #d8d8e8;
+    margin-bottom: 0.25rem;
 }
-.sidebar-tagline {
-    font-size: 0.62rem;
-    color: #454552;
-    letter-spacing: 0.14em;
+.sb-tag {
+    font-size: 0.58rem;
+    color: #28283a;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     margin-bottom: 2rem;
 }
 
-/* Radio nav */
+/* Nav label */
+.sb-nav-label {
+    font-size: 0.56rem;
+    color: #28283a;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    font-family: 'DM Mono', monospace;
+}
+
+/* Radio nav items */
 div[data-testid="stRadio"] > label { display: none !important; }
 div[data-testid="stRadio"] > div {
     display: flex !important;
     flex-direction: column !important;
-    gap: 0.3rem !important;
+    gap: 0.25rem !important;
 }
 div[data-testid="stRadio"] > div > label {
     display: flex !important;
     align-items: center !important;
     border-radius: 8px !important;
-    padding: 0.6rem 0.9rem !important;
+    padding: 0.55rem 0.85rem !important;
     border: 1px solid transparent !important;
     background: transparent !important;
     transition: all 0.18s ease !important;
     cursor: pointer !important;
 }
 div[data-testid="stRadio"] > div > label:hover {
-    background: rgba(255,255,255,0.04) !important;
-    border-color: rgba(255,255,255,0.07) !important;
+    background: #141418 !important;
+    border-color: #1e1e28 !important;
 }
 div[data-testid="stRadio"] > div > label:has(input:checked) {
-    background: rgba(180,170,255,0.08) !important;
-    border-color: rgba(180,170,255,0.22) !important;
+    background: #1a1828 !important;
+    border-color: #30285a !important;
 }
 div[data-testid="stRadio"] > div > label > div:first-child { display: none !important; }
 div[data-testid="stRadio"] > div > label > div > p {
     font-family: 'DM Mono', monospace !important;
-    font-size: 0.78rem !important;
-    color: #8888a0 !important;
+    font-size: 0.75rem !important;
+    color: #404058 !important;
     margin: 0 !important;
 }
 div[data-testid="stRadio"] > div > label:has(input:checked) > div > p {
-    color: #c8c4f8 !important;
+    color: #9090c0 !important;
 }
 
-/* Sidebar divider */
-.sidebar-divider {
-    height: 1px;
-    background: rgba(255,255,255,0.05);
-    margin: 1.5rem 0;
-}
+.sb-divider { height: 1px; background: #14141a; margin: 1.5rem 0; }
 
-/* Sidebar footer */
-.sidebar-footer {
-    font-size: 0.58rem;
-    color: #333340;
+.sb-footer {
+    font-size: 0.56rem;
+    color: #202028;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    margin-top: 2rem;
+    margin-top: 1.5rem;
+    font-family: 'DM Mono', monospace;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # ── SIDEBAR ───────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown('<div class="sidebar-brand">⚡ Multi-Aura Hub</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sidebar-tagline">AI Workspace</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sb-brand">⚡ Multi-Aura Hub</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sb-tag">AI Workspace</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sb-nav-label">Navigation</div>', unsafe_allow_html=True)
 
     page = st.radio(
         label="nav",
@@ -136,8 +144,8 @@ with st.sidebar:
         label_visibility="collapsed"
     )
 
-    st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
-    st.markdown('<div class="sidebar-footer">v1.0 · Powered by LangChain</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sb-divider"></div>', unsafe_allow_html=True)
+    st.markdown('<div class="sb-footer">v1.0 · Powered by LangChain</div>', unsafe_allow_html=True)
 
 # ── ROUTING ───────────────────────────────────────────────────────────────────
 if "Multi-Model" in page:

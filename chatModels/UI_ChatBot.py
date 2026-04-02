@@ -370,16 +370,16 @@ def show():
     MODES = {
         "Funny":      {"icon": "😄", "desc": "Witty & lighthearted",  "prompt": "You are a hilarious and witty assistant. Crack jokes, use puns, and keep things fun while still being helpful."},
         "Aggressive": {"icon": "🔥", "desc": "Bold & no-nonsense",    "prompt": "You are an aggressive, blunt, brutally honest assistant. No sugarcoating. Direct, intense, zero tolerance for nonsense."},
-        "Sad":        {"icon": "🌧️", "desc": "Melancholic & poetic",  "prompt": "You are a sad, melancholic assistant. You respond with a heavy heart, reflecting on life's sorrows. Gloomy but trying your best."},
+        "Sad":        {"icon": "🌧️", "desc": "Melancholic & poetic",  "prompt": "You are a sad, melancholic assistant. You respond with a heavy heart, reflecting on life's sorrows."},
         "Socratic":   {"icon": "🧠", "desc": "Deep & questioning",    "prompt": "You are a Socratic assistant. Guide users toward answers through thoughtful questions and philosophical reasoning."},
         "Creative":   {"icon": "🎨", "desc": "Imaginative & vivid",   "prompt": "You are a wildly creative assistant. Use vivid metaphors, poetic language, and out-of-the-box thinking in every response."},
     }
     MODE_NAMES = list(MODES.keys())
 
-    if "mode" not in st.session_state:
-        st.session_state.mode = "Funny"
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
+    if "aura_mode" not in st.session_state:
+        st.session_state.aura_mode = "Funny"
+    if "aura_messages" not in st.session_state:
+        st.session_state.aura_messages = []
 
     model = get_model()
 
@@ -388,247 +388,236 @@ def show():
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Mono:wght@300;400;500&display=swap');
 
+    /* Force sidebar always visible */
+    [data-testid="stSidebar"] { display: block !important; }
+    section[data-testid="stSidebarCollapsedControl"] { display: none !important; }
+
+    [data-testid="stAppViewContainer"] {
+        background: #0c0c10 !important;
+    }
+    .main .block-container {
+        max-width: 860px;
+        padding: 2.5rem 2.5rem 8rem;
+        margin: auto;
+    }
+
     .aura-title {
         font-family: 'Syne', sans-serif;
         font-weight: 800;
-        font-size: 1.9rem;
-        letter-spacing: -0.03em;
-        color: #e8e8f0;
-        line-height: 1.1;
+        font-size: 2.2rem;
+        letter-spacing: -0.04em;
+        color: #eeeef5;
+        line-height: 1.05;
+        margin-bottom: 0.3rem;
     }
-    .aura-subtitle {
-        font-size: 0.63rem;
-        color: #3e3e4f;
-        letter-spacing: 0.16em;
+    .aura-sub {
+        font-size: 0.62rem;
+        color: #38384a;
+        letter-spacing: 0.18em;
         text-transform: uppercase;
-        margin-top: 0.2rem;
-        margin-bottom: 1.8rem;
+        margin-bottom: 2.2rem;
     }
     .section-label {
-        font-size: 0.6rem;
-        color: #3e3e4f;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-        margin-bottom: 0.75rem;
-    }
-
-    /* ── Mode cards ── */
-    .mode-grid {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 0.5rem;
-        margin-bottom: 1.2rem;
-    }
-    .mode-card {
-        border: 1px solid rgba(255,255,255,0.07);
-        border-radius: 10px;
-        padding: 0.8rem 0.5rem;
-        text-align: center;
-        cursor: pointer;
-        background: rgba(255,255,255,0.02);
-        transition: all 0.18s ease;
-    }
-    .mode-card:hover {
-        border-color: rgba(180,170,255,0.25);
-        background: rgba(180,170,255,0.06);
-    }
-    .mode-card.active {
-        border-color: rgba(180,170,255,0.4);
-        background: rgba(180,170,255,0.1);
-    }
-    .mode-icon { font-size: 1.2rem; margin-bottom: 0.3rem; }
-    .mode-name {
-        font-family: 'Syne', sans-serif;
-        font-size: 0.72rem;
-        font-weight: 700;
-        color: #c8c4f8;
-        line-height: 1.2;
-    }
-    .mode-desc {
         font-size: 0.58rem;
-        color: #454552;
-        margin-top: 0.15rem;
-        line-height: 1.3;
+        color: #38384a;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        margin-bottom: 0.85rem;
+        font-family: 'DM Mono', monospace;
     }
-    .mode-card.active .mode-desc { color: #7a76a8; }
 
-    /* ── Radio (hidden — used for state only) ── */
-    div[data-testid="stRadio"] { display: none !important; }
+    /* ── Mode cards via st.button ── */
+    div[data-testid="column"] .stButton > button {
+        width: 100% !important;
+        background: #141418 !important;
+        border: 1px solid #1e1e28 !important;
+        border-radius: 12px !important;
+        padding: 1.1rem 0.5rem !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        color: #666678 !important;
+        font-family: 'DM Mono', monospace !important;
+        font-size: 0.7rem !important;
+        line-height: 1.6 !important;
+        min-height: 105px !important;
+        white-space: pre-wrap !important;
+    }
+    div[data-testid="column"] .stButton > button:hover {
+        background: #1a1a22 !important;
+        border-color: #30304a !important;
+        color: #aaaac0 !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.3) !important;
+    }
+    div[data-testid="column"] .stButton > button:focus {
+        outline: none !important;
+        box-shadow: none !important;
+    }
 
-    /* ── Active badge row ── */
+    /* Active mode card highlight */
+    .active-mode-col .stButton > button {
+        background: #1a1828 !important;
+        border-color: #3e3870 !important;
+        color: #b0aae0 !important;
+        box-shadow: 0 0 0 1px rgba(100,90,180,0.12), inset 0 1px 0 rgba(160,150,240,0.06) !important;
+    }
+
+    /* Badge row */
     .badge-row {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        margin-bottom: 0.7rem;
+        margin: 1.1rem 0 0.5rem;
     }
     .active-badge {
         display: inline-flex;
         align-items: center;
-        gap: 0.4rem;
-        background: rgba(180,170,255,0.07);
-        border: 1px solid rgba(180,170,255,0.15);
+        gap: 0.45rem;
+        background: #18162a;
+        border: 1px solid #2e2a50;
         border-radius: 20px;
-        padding: 0.22rem 0.8rem;
-        font-size: 0.63rem;
-        color: #9e9ac8;
-        letter-spacing: 0.06em;
+        padding: 0.28rem 0.9rem;
+        font-size: 0.62rem;
+        color: #7870b8;
+        letter-spacing: 0.07em;
+        font-family: 'DM Mono', monospace;
     }
 
-    /* ── Clear button ── */
-    .stButton > button {
-        background: rgba(255,255,255,0.03) !important;
-        border: 1px solid rgba(255,255,255,0.08) !important;
+    /* Clear button */
+    .clear-wrap .stButton > button {
+        background: #111116 !important;
+        border: 1px solid #1e1e28 !important;
         border-radius: 8px !important;
-        color: #454552 !important;
+        color: #333345 !important;
         font-family: 'DM Mono', monospace !important;
-        font-size: 0.68rem !important;
+        font-size: 0.65rem !important;
         padding: 0.28rem 0.9rem !important;
-        transition: all 0.18s ease !important;
+        min-height: unset !important;
+        transition: all 0.18s !important;
+        white-space: nowrap !important;
     }
-    .stButton > button:hover {
-        border-color: rgba(180,170,255,0.28) !important;
-        color: #9e9ac8 !important;
-    }
-
-    /* ── Divider ── */
-    .divider-line {
-        height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
-        margin: 0.5rem 0 1.2rem;
+    .clear-wrap .stButton > button:hover {
+        border-color: #2e2e48 !important;
+        color: #7878a0 !important;
+        transform: none !important;
+        box-shadow: none !important;
     }
 
-    /* ── Messages ── */
-    .msg-wrap { display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 1rem; }
-    .msg { display: flex; gap: 0.7rem; align-items: flex-start; }
+    .divider { height: 1px; background: #16161e; margin: 0.8rem 0 1.4rem; }
+
+    /* Chat bubbles */
+    .msg-wrap { display: flex; flex-direction: column; gap: 1rem; }
+    .msg { display: flex; gap: 0.75rem; align-items: flex-start; }
     .msg.user { flex-direction: row-reverse; }
-    .avatar {
-        width: 26px; height: 26px; border-radius: 6px; flex-shrink: 0;
+    .av {
+        width: 28px; height: 28px; border-radius: 7px; flex-shrink: 0;
         display: flex; align-items: center; justify-content: center;
         font-size: 0.7rem; font-weight: 600;
     }
-    .avatar.bot  { background: #2a2736; color: #9e9ac8; border: 1px solid rgba(180,170,255,0.2); }
-    .avatar.user { background: #1a2030; color: #7899c8; border: 1px solid rgba(120,153,200,0.2); }
+    .av.bot  { background: #1c1928; color: #7870b0; border: 1px solid #28243c; }
+    .av.user { background: #101820; color: #5070a0; border: 1px solid #182030; }
     .bubble {
-        max-width: 78%;
-        padding: 0.65rem 0.95rem;
-        border-radius: 10px;
-        font-size: 0.83rem;
-        line-height: 1.7;
-        white-space: pre-wrap;
+        max-width: 78%; padding: 0.75rem 1.1rem; border-radius: 12px;
+        font-size: 0.82rem; line-height: 1.75; white-space: pre-wrap;
         font-family: 'DM Mono', monospace;
     }
     .bubble.bot {
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.06);
-        color: #b8b8c8;
+        background: #131318; border: 1px solid #1c1c24; color: #9898b0;
         border-top-left-radius: 3px;
     }
     .bubble.user {
-        background: rgba(120,153,200,0.1);
-        border: 1px solid rgba(120,153,200,0.15);
-        color: #c8d8f0;
+        background: #0e1620; border: 1px solid #182030; color: #90b0d0;
         border-top-right-radius: 3px;
     }
     .empty-state {
-        text-align: center;
-        padding: 3rem 0 2rem;
-        color: #2a2a36;
-        font-size: 0.75rem;
-        letter-spacing: 0.06em;
+        text-align: center; padding: 4rem 0 2rem;
+        color: #222230; font-size: 0.73rem; letter-spacing: 0.08em;
+        font-family: 'DM Mono', monospace;
     }
 
-    /* ── Chat input ── */
+    /* Chat input */
     [data-testid="stChatInput"] textarea {
-        background: rgba(255,255,255,0.03) !important;
-        border: 1px solid rgba(255,255,255,0.09) !important;
-        border-radius: 10px !important;
-        color: #c9c9d3 !important;
+        background: #131318 !important;
+        border: 1px solid #1e1e28 !important;
+        border-radius: 12px !important;
+        color: #b8b8cc !important;
         font-family: 'DM Mono', monospace !important;
         font-size: 0.82rem !important;
     }
     [data-testid="stChatInput"] textarea:focus {
-        border-color: rgba(180,170,255,0.3) !important;
-        box-shadow: 0 0 0 3px rgba(180,170,255,0.06) !important;
+        border-color: #3e3870 !important;
+        box-shadow: 0 0 0 3px rgba(62,56,112,0.15) !important;
     }
-    [data-testid="stChatInputSubmitButton"] svg { fill: #7a76c8 !important; }
+    [data-testid="stChatInput"] textarea::placeholder { color: #252535 !important; }
+    [data-testid="stChatInputSubmitButton"] svg { fill: #5850a8 !important; }
+    .stSpinner > div { border-top-color: #5850a8 !important; }
     </style>
     """, unsafe_allow_html=True)
 
     # ── HEADER ────────────────────────────────────────────────────────────────
-    st.markdown("""
-    <div class="aura-title">Aura Chat</div>
-    <div class="aura-subtitle">Single model · Choose a personality</div>
-    """, unsafe_allow_html=True)
+    st.markdown('<div class="aura-title">Aura Chat</div>', unsafe_allow_html=True)
+    st.markdown('<div class="aura-sub">Single model · Choose a personality</div>', unsafe_allow_html=True)
 
-    # ── MODE CARDS (HTML visual) + Radio (state) ──────────────────────────────
+    # ── MODE BUTTONS ──────────────────────────────────────────────────────────
     st.markdown('<div class="section-label">Assistant Mode</div>', unsafe_allow_html=True)
 
-    cards_html = '<div class="mode-grid">'
-    for name, info in MODES.items():
-        active_cls = "active" if name == st.session_state.mode else ""
-        cards_html += f"""
-        <div class="mode-card {active_cls}">
-            <div class="mode-icon">{info['icon']}</div>
-            <div class="mode-name">{name}</div>
-            <div class="mode-desc">{info['desc']}</div>
-        </div>"""
-    cards_html += '</div>'
-    st.markdown(cards_html, unsafe_allow_html=True)
+    cols = st.columns(len(MODES))
+    for i, (name, info) in enumerate(MODES.items()):
+        with cols[i]:
+            is_active = st.session_state.aura_mode == name
+            if is_active:
+                st.markdown('<div class="active-mode-col">', unsafe_allow_html=True)
 
-    # Hidden radio for actual interactivity
-    labels = [f"{MODES[n]['icon']}  {n}" for n in MODE_NAMES]
-    selected_label = st.radio(
-        label="mode",
-        options=labels,
-        index=MODE_NAMES.index(st.session_state.mode),
-        horizontal=True,
-        label_visibility="collapsed",
-    )
-    selected_mode = MODE_NAMES[labels.index(selected_label)]
-    if selected_mode != st.session_state.mode:
-        st.session_state.mode = selected_mode
-        st.session_state.messages = []
-        st.rerun()
+            btn_label = f"{info['icon']}\n{name}\n{info['desc']}"
+            if st.button(btn_label, key=f"aura_mode_{name}", use_container_width=True):
+                if st.session_state.aura_mode != name:
+                    st.session_state.aura_mode = name
+                    st.session_state.aura_messages = []
+                    st.rerun()
+
+            if is_active:
+                st.markdown('</div>', unsafe_allow_html=True)
 
     # ── BADGE + CLEAR ─────────────────────────────────────────────────────────
-    current = MODES[st.session_state.mode]
-    col_badge, col_space, col_clear = st.columns([5, 2, 1])
-    with col_badge:
+    current = MODES[st.session_state.aura_mode]
+
+    col_b, col_s, col_c = st.columns([5, 2, 1])
+    with col_b:
         st.markdown(
-            f'<div class="active-badge">{current["icon"]} &nbsp; {st.session_state.mode} mode</div>',
+            f'<div class="active-badge">{current["icon"]} &nbsp;{st.session_state.aura_mode} mode</div>',
             unsafe_allow_html=True
         )
-    with col_clear:
-        if st.button("↺ Clear"):
-            st.session_state.messages = []
+    with col_c:
+        st.markdown('<div class="clear-wrap">', unsafe_allow_html=True)
+        if st.button("↺ Clear", key="aura_clear"):
+            st.session_state.aura_messages = []
             st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="divider-line"></div>', unsafe_allow_html=True)
+    st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
     # ── MESSAGES ──────────────────────────────────────────────────────────────
-    if not st.session_state.messages:
+    if not st.session_state.aura_messages:
         st.markdown(
-            f'<div class="empty-state">{current["icon"]} &nbsp; {st.session_state.mode} assistant ready</div>',
+            f'<div class="empty-state">{current["icon"]} &nbsp; {st.session_state.aura_mode} assistant ready — say something</div>',
             unsafe_allow_html=True
         )
     else:
         html = '<div class="msg-wrap">'
-        for m in st.session_state.messages:
+        for m in st.session_state.aura_messages:
             if isinstance(m, HumanMessage):
-                html += (f'<div class="msg user"><div class="avatar user">U</div>'
+                html += (f'<div class="msg user"><div class="av user">U</div>'
                          f'<div class="bubble user">{m.content}</div></div>')
             elif isinstance(m, AIMessage):
-                html += (f'<div class="msg bot"><div class="avatar bot">⚡</div>'
+                html += (f'<div class="msg bot"><div class="av bot">⚡</div>'
                          f'<div class="bubble bot">{m.content}</div></div>')
         html += '</div>'
         st.markdown(html, unsafe_allow_html=True)
 
     # ── INPUT ─────────────────────────────────────────────────────────────────
     if prompt := st.chat_input("Type a message…"):
-        st.session_state.messages.append(HumanMessage(content=prompt))
-        full_messages = [SystemMessage(content=current["prompt"])] + st.session_state.messages
+        st.session_state.aura_messages.append(HumanMessage(content=prompt))
+        full_messages = [SystemMessage(content=current["prompt"])] + st.session_state.aura_messages
         with st.spinner(""):
             response = model.invoke(full_messages)
-        st.session_state.messages.append(AIMessage(content=response.content))
+        st.session_state.aura_messages.append(AIMessage(content=response.content))
         st.rerun()
