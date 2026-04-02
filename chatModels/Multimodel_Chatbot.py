@@ -4,10 +4,10 @@ from langchain_mistralai import ChatMistralAI
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
+load_dotenv()
 
 def show():
 # Load Environment Variables
-    load_dotenv()
 
 
     st.title("🌐 Multi-Aura Hub")

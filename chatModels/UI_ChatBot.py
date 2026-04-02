@@ -223,7 +223,6 @@ def show():
     """, unsafe_allow_html=True)
 
     # ── Header ────────────────────────────────────────────────────────────────────
-    st.markdown('<div class="chat-title">⚡ Aura Chat</div>', unsafe_allow_html=True)
     st.markdown('<div class="chat-subtitle">AI Assistant · Pick a personality</div>', unsafe_allow_html=True)
 
     # ── Mode selector using st.radio (styled as cards) ───────────────────────────

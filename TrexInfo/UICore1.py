@@ -14,11 +14,11 @@ load_dotenv()
 def show():
     st.markdown('<div class="title">🎬 Movie Info Extractor</div>', unsafe_allow_html=True)
     # ---------------- UI CONFIG ----------------
-    st.set_page_config(
-        page_title="🎬 Movie Info Extractor",
-        page_icon="🎥",
-        layout="centered"
-    )
+    # st.set_page_config(
+    #     page_title="🎬 Movie Info Extractor",
+    #     page_icon="🎥",
+    #     layout="centered"
+    # )
 
     # Custom CSS for better UI
     st.markdown("""
@@ -46,7 +46,6 @@ def show():
         </style>
     """, unsafe_allow_html=True)
 
-    st.markdown('<div class="title">🎬 Movie Info Extractor</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub">Extract structured movie data from any paragraph</div>', unsafe_allow_html=True)
 
     # ---------------- MODEL ----------------

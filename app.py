@@ -1,13 +1,19 @@
 import streamlit as st
 
-# Setup the Sidebar Navigation
+# 1. Set Page Config ONLY ONCE here in the main file
+st.set_page_config(page_title="AI Portfolio Hub", page_icon="🚀", layout="wide")
+
 st.sidebar.title("🚀 My AI Portfolio")
 page = st.sidebar.radio("Go to:", ["Multi-Model Chatbot", "Aura Chat (Single)", "Movie Data Extractor"])
 
 if page == "Multi-Model Chatbot":
-    import chatModels.Multimodel_Chatbot as multi
-    # Note: You might need to wrap your files in a 'main()' function to call them here
+    from chatModels import Multimodel_Chatbot
+    Multimodel_Chatbot.show() # <--- This calls the function inside the file
+
 elif page == "Aura Chat (Single)":
-    import chatModels.UI_ChatBot as aura
+    from chatModels import UI_ChatBot
+    UI_ChatBot.show() # <--- This calls the function inside the file
+
 elif page == "Movie Data Extractor":
-    import TrexInfo.UICore1 as extractor
+    from TrexInfo import UICore1
+    UICore1.show() # <--- This calls the function inside the file   
