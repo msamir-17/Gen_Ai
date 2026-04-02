@@ -6,6 +6,18 @@ from langchain_groq import ChatGroq
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 # load_dotenv()
 
+
+
+@st.cache_resource
+def load_llm(model_option):
+    config = MODELS_CONFIG[model_option]
+    if config["provider"] == "mistral":
+        return ChatMistralAI(model=config["model"], temperature=0.8)
+    elif config["provider"] == "google":
+        return ChatGoogleGenerativeAI(model=config["model"], temperature=0.8)
+    elif config["provider"] == "groq":
+        return ChatGroq(model=config["model"], temperature=0.8)
+
 def show():
 # Load Environment Variables
 
@@ -34,15 +46,7 @@ def show():
         st.session_state.persona = "Funny"
 
     # ── MODEL INITIALIZATION ──────────────────────────────────────────────────────
-    @st.cache_resource
-    def load_llm(model_option):
-        config = MODELS_CONFIG[model_option]
-        if config["provider"] == "mistral":
-            return ChatMistralAI(model=config["model"], temperature=0.8)
-        elif config["provider"] == "google":
-            return ChatGoogleGenerativeAI(model=config["model"], temperature=0.8)
-        elif config["provider"] == "groq":
-            return ChatGroq(model=config["model"], temperature=0.8)
+
 
     # ── SIDEBAR (Model Selection) ─────────────────────────────────────────────────
     with st.sidebar:

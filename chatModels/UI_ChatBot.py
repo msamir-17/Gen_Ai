@@ -6,7 +6,9 @@ import streamlit as st
 from langchain_mistralai import ChatMistralAI
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 
-
+@st.cache_resource
+def get_model():
+    return ChatMistralAI(model="mistral-small-2603", temperature=0.9, max_tokens=100)
 
 def show():
     st.markdown('<div class="chat-title">⚡ Aura Chat</div>', unsafe_allow_html=True)
@@ -29,9 +31,7 @@ def show():
         st.session_state.messages = []
 
     # ── Model ─────────────────────────────────────────────────────────────────────
-    @st.cache_resource
-    def get_model():
-        return ChatMistralAI(model="mistral-small-2603", temperature=0.9, max_tokens=100)
+
     model = get_model()
 
     # ── CSS ───────────────────────────────────────────────────────────────────────
