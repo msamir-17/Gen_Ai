@@ -368,11 +368,16 @@ def get_model():
 
 def show():
     MODES = {
-        "Funny":      {"icon": "😄", "desc": "Witty & lighthearted",  "prompt": "You are a hilarious and witty assistant. Crack jokes, use puns, and keep things fun while still being helpful."},
-        "Aggressive": {"icon": "🔥", "desc": "Bold & no-nonsense",    "prompt": "You are an aggressive, blunt, brutally honest assistant. No sugarcoating. Direct, intense, zero tolerance for nonsense."},
-        "Sad":        {"icon": "🌧️", "desc": "Melancholic & poetic",  "prompt": "You are a sad, melancholic assistant. You respond with a heavy heart, reflecting on life's sorrows."},
-        "Socratic":   {"icon": "🧠", "desc": "Deep & questioning",    "prompt": "You are a Socratic assistant. Guide users toward answers through thoughtful questions and philosophical reasoning."},
-        "Creative":   {"icon": "🎨", "desc": "Imaginative & vivid",   "prompt": "You are a wildly creative assistant. Use vivid metaphors, poetic language, and out-of-the-box thinking in every response."},
+        "Funny":      {"icon": "😄", "color": "#fef3c7", "border": "#fcd34d", "text": "#92400e", "desc": "Witty & lighthearted",
+                       "prompt": "You are a hilarious and witty assistant. Crack jokes, use puns, and keep things fun while still being helpful."},
+        "Aggressive": {"icon": "🔥", "color": "#fff1f2", "border": "#fda4af", "text": "#9f1239", "desc": "Bold & no-nonsense",
+                       "prompt": "You are an aggressive, blunt, brutally honest assistant. No sugarcoating. Direct, intense, zero tolerance for nonsense."},
+        "Sad":        {"icon": "🌧️", "color": "#eff6ff", "border": "#93c5fd", "text": "#1e40af", "desc": "Melancholic & poetic",
+                       "prompt": "You are a sad, melancholic assistant. You respond with a heavy heart, reflecting on life's sorrows."},
+        "Socratic":   {"icon": "🧠", "color": "#f0fdf4", "border": "#86efac", "text": "#166534", "desc": "Deep & questioning",
+                       "prompt": "You are a Socratic assistant. Guide users toward answers through thoughtful questions and philosophical reasoning."},
+        "Creative":   {"icon": "🎨", "color": "#fdf4ff", "border": "#e879f9", "text": "#701a75", "desc": "Imaginative & vivid",
+                       "prompt": "You are a wildly creative assistant. Use vivid metaphors, poetic language, and out-of-the-box thinking."},
     }
     MODE_NAMES = list(MODES.keys())
 
@@ -386,204 +391,210 @@ def show():
     # ── CSS ───────────────────────────────────────────────────────────────────
     st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Mono:wght@300;400;500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
 
-    /* Force sidebar always visible */
-    [data-testid="stSidebar"] { display: block !important; }
-    section[data-testid="stSidebarCollapsedControl"] { display: none !important; }
-
-    [data-testid="stAppViewContainer"] {
-        background: #0c0c10 !important;
-    }
-    .main .block-container {
-        max-width: 860px;
-        padding: 2.5rem 2.5rem 8rem;
-        margin: auto;
-    }
+    [data-testid="stAppViewContainer"] { background-color: #f5f4f0 !important; }
 
     .aura-title {
-        font-family: 'Syne', sans-serif;
-        font-weight: 800;
-        font-size: 2.2rem;
-        letter-spacing: -0.04em;
-        color: #eeeef5;
-        line-height: 1.05;
-        margin-bottom: 0.3rem;
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 700;
+        font-size: 2rem;
+        color: #1a1a2e;
+        letter-spacing: -0.03em;
+        line-height: 1.1;
+        margin-bottom: 0.25rem;
     }
     .aura-sub {
-        font-size: 0.62rem;
-        color: #38384a;
-        letter-spacing: 0.18em;
+        font-size: 0.72rem;
+        color: #9090a8;
+        letter-spacing: 0.1em;
         text-transform: uppercase;
-        margin-bottom: 2.2rem;
+        margin-bottom: 2rem;
     }
     .section-label {
-        font-size: 0.58rem;
-        color: #38384a;
-        letter-spacing: 0.18em;
+        font-size: 0.65rem;
+        color: #a0a0b8;
+        letter-spacing: 0.14em;
         text-transform: uppercase;
-        margin-bottom: 0.85rem;
-        font-family: 'DM Mono', monospace;
+        margin-bottom: 0.75rem;
+        font-family: 'Inter', sans-serif;
+        font-weight: 500;
     }
 
-    /* ── Mode cards via st.button ── */
-    div[data-testid="column"] .stButton > button {
+    /* ── Mode cards — real buttons, each column gets its own active class ── */
+    .mode-col .stButton > button {
         width: 100% !important;
-        background: #141418 !important;
-        border: 1px solid #1e1e28 !important;
-        border-radius: 12px !important;
-        padding: 1.1rem 0.5rem !important;
-        cursor: pointer !important;
-        transition: all 0.2s ease !important;
-        color: #666678 !important;
-        font-family: 'DM Mono', monospace !important;
-        font-size: 0.7rem !important;
+        background: #ffffff !important;
+        border: 1.5px solid #e8e8f0 !important;
+        border-radius: 14px !important;
+        padding: 1.3rem 0.5rem !important;
+        transition: all 0.18s ease !important;
+        color: #6060a0 !important;
+        font-family: 'Inter', sans-serif !important;
+        font-size: 0.75rem !important;
+        font-weight: 500 !important;
         line-height: 1.6 !important;
-        min-height: 105px !important;
-        white-space: pre-wrap !important;
+        min-height: 115px !important;
+        cursor: pointer !important;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important;
     }
-    div[data-testid="column"] .stButton > button:hover {
-        background: #1a1a22 !important;
-        border-color: #30304a !important;
-        color: #aaaac0 !important;
+    .mode-col .stButton > button:hover {
+        border-color: #a5b4fc !important;
+        background: #fafafe !important;
         transform: translateY(-2px) !important;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.3) !important;
-    }
-    div[data-testid="column"] .stButton > button:focus {
-        outline: none !important;
-        box-shadow: none !important;
+        box-shadow: 0 6px 20px rgba(99,102,241,0.1) !important;
     }
 
-    /* Active mode card highlight */
-    .active-mode-col .stButton > button {
-        background: #1a1828 !important;
-        border-color: #3e3870 !important;
-        color: #b0aae0 !important;
-        box-shadow: 0 0 0 1px rgba(100,90,180,0.12), inset 0 1px 0 rgba(160,150,240,0.06) !important;
+    /* Funny active */
+    .mode-active-Funny .stButton > button {
+        background: #fef3c7 !important; border-color: #fcd34d !important; color: #92400e !important;
+        box-shadow: 0 4px 16px rgba(252,211,77,0.2) !important;
+    }
+    /* Aggressive active */
+    .mode-active-Aggressive .stButton > button {
+        background: #fff1f2 !important; border-color: #fda4af !important; color: #9f1239 !important;
+        box-shadow: 0 4px 16px rgba(253,164,175,0.2) !important;
+    }
+    /* Sad active */
+    .mode-active-Sad .stButton > button {
+        background: #eff6ff !important; border-color: #93c5fd !important; color: #1e40af !important;
+        box-shadow: 0 4px 16px rgba(147,197,253,0.2) !important;
+    }
+    /* Socratic active */
+    .mode-active-Socratic .stButton > button {
+        background: #f0fdf4 !important; border-color: #86efac !important; color: #166534 !important;
+        box-shadow: 0 4px 16px rgba(134,239,172,0.2) !important;
+    }
+    /* Creative active */
+    .mode-active-Creative .stButton > button {
+        background: #fdf4ff !important; border-color: #e879f9 !important; color: #701a75 !important;
+        box-shadow: 0 4px 16px rgba(232,121,249,0.2) !important;
     }
 
-    /* Badge row */
+    /* ── Badge row ── */
     .badge-row {
         display: flex;
         align-items: center;
-        margin: 1.1rem 0 0.5rem;
+        justify-content: space-between;
+        margin: 1rem 0 0.5rem;
     }
-    .active-badge {
+    .mode-badge {
         display: inline-flex;
         align-items: center;
-        gap: 0.45rem;
-        background: #18162a;
-        border: 1px solid #2e2a50;
+        gap: 0.4rem;
         border-radius: 20px;
         padding: 0.28rem 0.9rem;
-        font-size: 0.62rem;
-        color: #7870b8;
-        letter-spacing: 0.07em;
-        font-family: 'DM Mono', monospace;
+        font-size: 0.65rem;
+        font-family: 'Inter', sans-serif;
+        font-weight: 500;
+        letter-spacing: 0.04em;
     }
 
     /* Clear button */
     .clear-wrap .stButton > button {
-        background: #111116 !important;
-        border: 1px solid #1e1e28 !important;
+        background: #ffffff !important;
+        border: 1px solid #e0e0f0 !important;
         border-radius: 8px !important;
-        color: #333345 !important;
-        font-family: 'DM Mono', monospace !important;
-        font-size: 0.65rem !important;
-        padding: 0.28rem 0.9rem !important;
+        color: #a0a0c0 !important;
+        font-family: 'Inter', sans-serif !important;
+        font-size: 0.7rem !important;
+        padding: 0.3rem 1rem !important;
         min-height: unset !important;
-        transition: all 0.18s !important;
-        white-space: nowrap !important;
+        box-shadow: none !important;
+        transition: all 0.15s !important;
     }
     .clear-wrap .stButton > button:hover {
-        border-color: #2e2e48 !important;
-        color: #7878a0 !important;
+        border-color: #c0c0e0 !important;
+        color: #6060a0 !important;
         transform: none !important;
         box-shadow: none !important;
     }
 
-    .divider { height: 1px; background: #16161e; margin: 0.8rem 0 1.4rem; }
+    .page-divider { height: 1px; background: #e8e8f0; margin: 0.75rem 0 1.5rem; }
 
-    /* Chat bubbles */
+    /* ── Chat bubbles custom HTML ── */
     .msg-wrap { display: flex; flex-direction: column; gap: 1rem; }
-    .msg { display: flex; gap: 0.75rem; align-items: flex-start; }
+    .msg { display: flex; gap: 0.8rem; align-items: flex-start; }
     .msg.user { flex-direction: row-reverse; }
     .av {
-        width: 28px; height: 28px; border-radius: 7px; flex-shrink: 0;
+        width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
         display: flex; align-items: center; justify-content: center;
-        font-size: 0.7rem; font-weight: 600;
+        font-size: 0.78rem; font-weight: 600;
     }
-    .av.bot  { background: #1c1928; color: #7870b0; border: 1px solid #28243c; }
-    .av.user { background: #101820; color: #5070a0; border: 1px solid #182030; }
+    .av.bot  { background: #eef2ff; color: #6366f1; border: 1px solid #c7d2fe; }
+    .av.user { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
     .bubble {
-        max-width: 78%; padding: 0.75rem 1.1rem; border-radius: 12px;
-        font-size: 0.82rem; line-height: 1.75; white-space: pre-wrap;
-        font-family: 'DM Mono', monospace;
+        max-width: 78%; padding: 0.8rem 1.1rem;
+        border-radius: 14px; font-size: 0.85rem; line-height: 1.75;
+        white-space: pre-wrap; font-family: 'Inter', sans-serif;
     }
     .bubble.bot {
-        background: #131318; border: 1px solid #1c1c24; color: #9898b0;
-        border-top-left-radius: 3px;
+        background: #ffffff; border: 1px solid #f0f0f8; color: #3a3a5a;
+        border-top-left-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.05);
     }
     .bubble.user {
-        background: #0e1620; border: 1px solid #182030; color: #90b0d0;
-        border-top-right-radius: 3px;
+        background: #eef2ff; border: 1px solid #e0e7ff; color: #3730a3;
+        border-top-right-radius: 4px;
     }
     .empty-state {
         text-align: center; padding: 4rem 0 2rem;
-        color: #222230; font-size: 0.73rem; letter-spacing: 0.08em;
-        font-family: 'DM Mono', monospace;
+        color: #d8d8e8; font-size: 0.8rem; letter-spacing: 0.06em;
+        font-family: 'Inter', sans-serif;
     }
 
-    /* Chat input */
+    /* ── Chat input ── */
     [data-testid="stChatInput"] textarea {
-        background: #131318 !important;
-        border: 1px solid #1e1e28 !important;
+        background: #ffffff !important;
+        border: 1.5px solid #e0e0f0 !important;
         border-radius: 12px !important;
-        color: #b8b8cc !important;
-        font-family: 'DM Mono', monospace !important;
-        font-size: 0.82rem !important;
+        color: #1a1a2e !important;
+        font-family: 'Inter', sans-serif !important;
+        font-size: 0.88rem !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
     }
     [data-testid="stChatInput"] textarea:focus {
-        border-color: #3e3870 !important;
-        box-shadow: 0 0 0 3px rgba(62,56,112,0.15) !important;
+        border-color: #6366f1 !important;
+        box-shadow: 0 0 0 3px rgba(99,102,241,0.1) !important;
     }
-    [data-testid="stChatInput"] textarea::placeholder { color: #252535 !important; }
-    [data-testid="stChatInputSubmitButton"] svg { fill: #5850a8 !important; }
-    .stSpinner > div { border-top-color: #5850a8 !important; }
+    [data-testid="stChatInput"] textarea::placeholder { color: #c8c8e0 !important; }
+    [data-testid="stChatInputSubmitButton"] svg { fill: #6366f1 !important; }
+    .stSpinner > div { border-top-color: #6366f1 !important; }
     </style>
     """, unsafe_allow_html=True)
 
     # ── HEADER ────────────────────────────────────────────────────────────────
     st.markdown('<div class="aura-title">Aura Chat</div>', unsafe_allow_html=True)
-    st.markdown('<div class="aura-sub">Single model · Choose a personality</div>', unsafe_allow_html=True)
+    st.markdown('<div class="aura-sub">Single model · Pick a personality</div>', unsafe_allow_html=True)
 
-    # ── MODE BUTTONS ──────────────────────────────────────────────────────────
+    # ── MODE CARDS ────────────────────────────────────────────────────────────
     st.markdown('<div class="section-label">Assistant Mode</div>', unsafe_allow_html=True)
 
     cols = st.columns(len(MODES))
     for i, (name, info) in enumerate(MODES.items()):
         with cols[i]:
             is_active = st.session_state.aura_mode == name
+            wrap = f"mode-active-{name}" if is_active else "mode-col"
+            # Both active and inactive need mode-col for base styles + active override
             if is_active:
-                st.markdown('<div class="active-mode-col">', unsafe_allow_html=True)
+                st.markdown(f'<div class="mode-col mode-active-{name}">', unsafe_allow_html=True)
+            else:
+                st.markdown('<div class="mode-col">', unsafe_allow_html=True)
 
-            btn_label = f"{info['icon']}\n{name}\n{info['desc']}"
-            if st.button(btn_label, key=f"aura_mode_{name}", use_container_width=True):
+            if st.button(f"{info['icon']}\n{name}\n{info['desc']}", key=f"aura_mode_{name}", use_container_width=True):
                 if st.session_state.aura_mode != name:
                     st.session_state.aura_mode = name
                     st.session_state.aura_messages = []
                     st.rerun()
-
-            if is_active:
-                st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
     # ── BADGE + CLEAR ─────────────────────────────────────────────────────────
     current = MODES[st.session_state.aura_mode]
+    badge_style = f"background:{current['color']};border:1px solid {current['border']};color:{current['text']};"
 
-    col_b, col_s, col_c = st.columns([5, 2, 1])
+    col_b, col_sp, col_c = st.columns([5, 2, 1])
     with col_b:
         st.markdown(
-            f'<div class="active-badge">{current["icon"]} &nbsp;{st.session_state.aura_mode} mode</div>',
+            f'<div class="mode-badge" style="{badge_style}">{current["icon"]} &nbsp;{st.session_state.aura_mode} mode</div>',
             unsafe_allow_html=True
         )
     with col_c:
@@ -593,7 +604,7 @@ def show():
             st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
+    st.markdown('<div class="page-divider"></div>', unsafe_allow_html=True)
 
     # ── MESSAGES ──────────────────────────────────────────────────────────────
     if not st.session_state.aura_messages:
@@ -605,11 +616,13 @@ def show():
         html = '<div class="msg-wrap">'
         for m in st.session_state.aura_messages:
             if isinstance(m, HumanMessage):
+                content = m.content.replace("<", "&lt;").replace(">", "&gt;")
                 html += (f'<div class="msg user"><div class="av user">U</div>'
-                         f'<div class="bubble user">{m.content}</div></div>')
+                         f'<div class="bubble user">{content}</div></div>')
             elif isinstance(m, AIMessage):
+                content = m.content.replace("<", "&lt;").replace(">", "&gt;")
                 html += (f'<div class="msg bot"><div class="av bot">⚡</div>'
-                         f'<div class="bubble bot">{m.content}</div></div>')
+                         f'<div class="bubble bot">{content}</div></div>')
         html += '</div>'
         st.markdown(html, unsafe_allow_html=True)
 

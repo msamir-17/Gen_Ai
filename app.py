@@ -21,141 +21,152 @@
 
 import streamlit as st
 
-st.set_page_config(page_title="Multi-Aura Hub", page_icon="⚡", layout="wide")
+st.set_page_config(
+    page_title="Multi-Aura Hub",
+    page_icon="⚡",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-# ── GLOBAL CSS ────────────────────────────────────────────────────────────────
+# ── GLOBAL STYLES ─────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Mono:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
 
-html, body, [data-testid="stAppViewContainer"] {
-    background: #0c0c10 !important;
-    font-family: 'DM Mono', monospace;
-    color: #c0c0d0;
+/* Reset & base */
+html, body { margin: 0; padding: 0; }
+
+[data-testid="stAppViewContainer"] {
+    background-color: #f5f4f0 !important;
+    font-family: 'Inter', sans-serif;
 }
 
-/* ── Always show sidebar, hide collapse toggle ── */
-[data-testid="stSidebar"] {
-    display: block !important;
-    min-width: 220px !important;
-    max-width: 240px !important;
-}
-section[data-testid="stSidebarCollapsedControl"] { display: none !important; }
-[data-testid="collapsedControl"] { display: none !important; }
-button[kind="header"] { display: none !important; }
-
-[data-testid="stHeader"], header { background: transparent !important; }
+/* Hide Streamlit chrome */
+[data-testid="stHeader"] { background: transparent !important; height: 0 !important; }
 [data-testid="stToolbar"], #MainMenu, footer { display: none !important; }
 
 /* ── SIDEBAR ── */
 [data-testid="stSidebar"] {
-    background: #0f0f14 !important;
-    border-right: 1px solid #18181f !important;
-}
-[data-testid="stSidebar"] > div:first-child {
-    padding: 2rem 1.3rem 1.5rem;
+    background-color: #1a1a2e !important;
+    border-right: none !important;
+    min-width: 230px !important;
 }
 
-/* Brand */
-.sb-brand {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 1.05rem;
-    letter-spacing: -0.02em;
-    color: #d8d8e8;
-    margin-bottom: 0.25rem;
+/* Hide collapse arrow */
+[data-testid="stSidebarCollapseButton"],
+[data-testid="collapsedControl"],
+section[data-testid="stSidebarCollapsedControl"],
+button[data-testid="baseButton-header"] {
+    display: none !important;
 }
-.sb-tag {
-    font-size: 0.58rem;
-    color: #28283a;
-    letter-spacing: 0.16em;
+
+[data-testid="stSidebar"] .block-container { padding: 0 !important; }
+[data-testid="stSidebar"] > div:first-child { padding: 2rem 1.4rem; }
+
+/* Sidebar brand */
+.sb-logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #ffffff;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.2rem;
+}
+.sb-tagline {
+    font-size: 0.65rem;
+    color: #4a4a7a;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     margin-bottom: 2rem;
 }
-
-/* Nav label */
-.sb-nav-label {
-    font-size: 0.56rem;
-    color: #28283a;
-    letter-spacing: 0.18em;
+.sb-section {
+    font-size: 0.6rem;
+    color: #3a3a5a;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    margin-bottom: 0.5rem;
-    font-family: 'DM Mono', monospace;
+    margin-bottom: 0.6rem;
+    font-family: 'Inter', sans-serif;
 }
 
-/* Radio nav items */
+/* Nav radio */
 div[data-testid="stRadio"] > label { display: none !important; }
 div[data-testid="stRadio"] > div {
     display: flex !important;
     flex-direction: column !important;
-    gap: 0.25rem !important;
+    gap: 0.2rem !important;
 }
 div[data-testid="stRadio"] > div > label {
     display: flex !important;
     align-items: center !important;
     border-radius: 8px !important;
-    padding: 0.55rem 0.85rem !important;
+    padding: 0.6rem 0.9rem !important;
     border: 1px solid transparent !important;
     background: transparent !important;
-    transition: all 0.18s ease !important;
+    transition: all 0.15s ease !important;
     cursor: pointer !important;
 }
 div[data-testid="stRadio"] > div > label:hover {
-    background: #141418 !important;
-    border-color: #1e1e28 !important;
+    background: rgba(255,255,255,0.06) !important;
 }
 div[data-testid="stRadio"] > div > label:has(input:checked) {
-    background: #1a1828 !important;
-    border-color: #30285a !important;
+    background: rgba(99,102,241,0.18) !important;
+    border-color: rgba(99,102,241,0.35) !important;
 }
 div[data-testid="stRadio"] > div > label > div:first-child { display: none !important; }
 div[data-testid="stRadio"] > div > label > div > p {
-    font-family: 'DM Mono', monospace !important;
-    font-size: 0.75rem !important;
-    color: #404058 !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.8rem !important;
+    color: #6060a0 !important;
     margin: 0 !important;
 }
 div[data-testid="stRadio"] > div > label:has(input:checked) > div > p {
-    color: #9090c0 !important;
+    color: #a5b4fc !important;
+    font-weight: 500 !important;
 }
 
-.sb-divider { height: 1px; background: #14141a; margin: 1.5rem 0; }
-
+.sb-divider { height: 1px; background: #22223a; margin: 1.5rem 0; }
 .sb-footer {
-    font-size: 0.56rem;
-    color: #202028;
+    font-size: 0.58rem;
+    color: #2a2a48;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    margin-top: 1.5rem;
-    font-family: 'DM Mono', monospace;
+}
+
+/* ── MAIN CONTENT AREA ── */
+.main .block-container {
+    padding: 2.5rem 3rem 8rem !important;
+    max-width: 900px !important;
+    margin: 0 auto !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # ── SIDEBAR ───────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown('<div class="sb-brand">⚡ Multi-Aura Hub</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sb-tag">AI Workspace</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sb-nav-label">Navigation</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sb-logo">⚡ Multi-Aura Hub</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sb-tagline">AI Workspace</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sb-section">Pages</div>', unsafe_allow_html=True)
 
     page = st.radio(
         label="nav",
-        options=["⬡  Multi-Model Chat", "◈  Aura Chat", "▣  Movie Extractor"],
+        options=[
+            "🤖  Multi-Model Chat",
+            "✨  Aura Chat",
+            "🎬  Movie Extractor",
+        ],
         label_visibility="collapsed"
     )
 
     st.markdown('<div class="sb-divider"></div>', unsafe_allow_html=True)
-    st.markdown('<div class="sb-footer">v1.0 · Powered by LangChain</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sb-footer">v1.0 · LangChain powered</div>', unsafe_allow_html=True)
 
-# ── ROUTING ───────────────────────────────────────────────────────────────────
+# ── PAGE ROUTING ──────────────────────────────────────────────────────────────
 if "Multi-Model" in page:
     from chatModels import Multimodel_Chatbot
     Multimodel_Chatbot.show()
-
-elif "Aura Chat" in page:
+elif "Aura" in page:
     from chatModels import UI_ChatBot
     UI_ChatBot.show()
-
 elif "Movie" in page:
     from TrexInfo import UICore1
     UICore1.show()

@@ -153,221 +153,265 @@ def load_llm(model_option):
 
 
 def show():
+    # ── SESSION STATE ─────────────────────────────────────────────────────────
+    if "mm_messages" not in st.session_state:
+        st.session_state.mm_messages = []
+    if "mm_persona" not in st.session_state:
+        st.session_state.mm_persona = "Funny"
+
     # ── CSS ───────────────────────────────────────────────────────────────────
     st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Mono:wght@300;400;500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
 
-    .mm-header {
+    /* Page background */
+    [data-testid="stAppViewContainer"] { background-color: #f5f4f0 !important; }
+
+    /* ── Header ── */
+    .mm-page-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 700;
+        font-size: 2rem;
+        color: #1a1a2e;
+        letter-spacing: -0.03em;
+        line-height: 1.1;
         margin-bottom: 0.25rem;
     }
-    .mm-title {
-        font-family: 'Syne', sans-serif;
-        font-weight: 800;
-        font-size: 1.9rem;
-        letter-spacing: -0.03em;
-        color: #e8e8f0;
-        line-height: 1.1;
-    }
-    .mm-subtitle {
-        font-size: 0.63rem;
-        color: #3e3e4f;
-        letter-spacing: 0.16em;
+    .mm-page-sub {
+        font-size: 0.72rem;
+        color: #9090a8;
+        letter-spacing: 0.1em;
         text-transform: uppercase;
-        margin-top: 0.2rem;
         margin-bottom: 2rem;
     }
-
-    /* ── Model selector pills ── */
-    .model-section-label {
-        font-size: 0.6rem;
-        color: #3e3e4f;
-        letter-spacing: 0.16em;
+    .mm-section-label {
+        font-size: 0.65rem;
+        color: #a0a0b8;
+        letter-spacing: 0.14em;
         text-transform: uppercase;
-        margin-bottom: 0.7rem;
+        margin-bottom: 0.75rem;
+        font-family: 'Inter', sans-serif;
+        font-weight: 500;
     }
 
-    /* Sidebar model selectbox */
+    /* ── Model selector in sidebar ── */
     [data-testid="stSidebar"] .stSelectbox label {
-        font-family: 'DM Mono', monospace !important;
-        font-size: 0.68rem !important;
-        color: #555568 !important;
-        letter-spacing: 0.1em !important;
+        font-family: 'Inter', sans-serif !important;
+        font-size: 0.62rem !important;
+        color: #3a3a5a !important;
+        letter-spacing: 0.12em !important;
         text-transform: uppercase !important;
+        font-weight: 500 !important;
     }
     [data-testid="stSidebar"] .stSelectbox > div > div {
-        background: rgba(255,255,255,0.03) !important;
-        border: 1px solid rgba(255,255,255,0.08) !important;
+        background: #22223c !important;
+        border: 1px solid #30305a !important;
         border-radius: 8px !important;
-        color: #c8c4f8 !important;
-        font-family: 'DM Mono', monospace !important;
-        font-size: 0.78rem !important;
+        color: #a5b4fc !important;
+        font-family: 'Inter', sans-serif !important;
+        font-size: 0.82rem !important;
+    }
+    [data-testid="stSidebar"] .stSelectbox > div > div:hover {
+        border-color: #6366f1 !important;
     }
 
-    /* ── Persona cards via columns ── */
-    .stButton > button {
-        background: rgba(255,255,255,0.03) !important;
-        border: 1px solid rgba(255,255,255,0.08) !important;
-        border-radius: 10px !important;
-        color: #888898 !important;
-        font-family: 'DM Mono', monospace !important;
-        font-size: 0.72rem !important;
-        padding: 0.65rem 0.4rem !important;
-        transition: all 0.18s ease !important;
-        width: 100% !important;
-        line-height: 1.5 !important;
-    }
-    .stButton > button:hover {
-        background: rgba(180,170,255,0.07) !important;
-        border-color: rgba(180,170,255,0.22) !important;
-        color: #c8c4f8 !important;
-    }
-
-    /* Sidebar clear button */
+    /* ── Sidebar clear button ── */
     [data-testid="stSidebar"] .stButton > button {
-        font-size: 0.68rem !important;
-        padding: 0.45rem 0.8rem !important;
-        color: #555568 !important;
+        background: #22223c !important;
+        border: 1px solid #30305a !important;
+        border-radius: 8px !important;
+        color: #6060a0 !important;
+        font-family: 'Inter', sans-serif !important;
+        font-size: 0.72rem !important;
+        padding: 0.45rem 1rem !important;
+        width: 100% !important;
+        transition: all 0.15s !important;
+    }
+    [data-testid="stSidebar"] .stButton > button:hover {
+        border-color: #6366f1 !important;
+        color: #a5b4fc !important;
     }
 
-    /* ── Status bar ── */
-    .status-bar {
+    /* Sidebar info */
+    [data-testid="stSidebar"] .stAlert {
+        background: #1e1e38 !important;
+        border: 1px solid #2a2a48 !important;
+        border-radius: 8px !important;
+        color: #5050a0 !important;
+        font-size: 0.7rem !important;
+    }
+
+    /* ── Persona cards — REAL st.button styled as cards ── */
+    .persona-col .stButton > button {
+        width: 100% !important;
+        background: #ffffff !important;
+        border: 1.5px solid #e8e8f0 !important;
+        border-radius: 14px !important;
+        padding: 1.2rem 0.6rem !important;
+        transition: all 0.18s ease !important;
+        color: #6060a0 !important;
+        font-family: 'Inter', sans-serif !important;
+        font-size: 0.75rem !important;
+        font-weight: 500 !important;
+        line-height: 1.6 !important;
+        min-height: 110px !important;
+        cursor: pointer !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
+    }
+    .persona-col .stButton > button:hover {
+        border-color: #6366f1 !important;
+        background: #fafafe !important;
+        color: #4040c0 !important;
+        box-shadow: 0 4px 16px rgba(99,102,241,0.12) !important;
+        transform: translateY(-2px) !important;
+    }
+
+    /* Active persona card */
+    .persona-col-active .stButton > button {
+        background: #eef2ff !important;
+        border: 1.5px solid #6366f1 !important;
+        color: #3730a3 !important;
+        box-shadow: 0 4px 16px rgba(99,102,241,0.18) !important;
+    }
+
+    /* ── Status pills ── */
+    .status-row {
         display: flex;
         align-items: center;
-        gap: 1rem;
-        font-size: 0.63rem;
-        color: #3e3e4f;
-        letter-spacing: 0.08em;
-        margin: 0.9rem 0 0.6rem;
+        gap: 0.6rem;
+        margin: 1rem 0 0.5rem;
+        flex-wrap: wrap;
     }
-    .status-pill {
+    .pill {
         display: inline-flex;
         align-items: center;
         gap: 0.35rem;
-        background: rgba(180,170,255,0.07);
-        border: 1px solid rgba(180,170,255,0.15);
+        background: #eef2ff;
+        border: 1px solid #c7d2fe;
         border-radius: 20px;
-        padding: 0.22rem 0.7rem;
-        color: #9e9ac8;
-        font-size: 0.63rem;
-        letter-spacing: 0.06em;
+        padding: 0.25rem 0.85rem;
+        font-size: 0.65rem;
+        color: #4f46e5;
+        font-family: 'Inter', sans-serif;
+        font-weight: 500;
+        letter-spacing: 0.03em;
     }
-    .divider-line {
+
+    /* ── Divider ── */
+    .page-divider {
         height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
-        margin: 0.6rem 0 1.2rem;
+        background: #e8e8f0;
+        margin: 0.75rem 0 1.5rem;
     }
 
     /* ── Chat messages ── */
     [data-testid="stChatMessage"] {
         background: transparent !important;
         border: none !important;
-        padding: 0 !important;
     }
-    [data-testid="stChatMessage"][data-testid*="user"] {
-        background: rgba(255,255,255,0.02) !important;
-        border-radius: 10px !important;
-        border: 1px solid rgba(255,255,255,0.05) !important;
+
+    /* User message */
+    [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) {
+        background: #eef2ff !important;
+        border-radius: 12px !important;
+        border: 1px solid #e0e7ff !important;
         padding: 0.75rem 1rem !important;
         margin-bottom: 0.5rem !important;
     }
 
+    /* Assistant message */
+    [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-assistant"]) {
+        background: #ffffff !important;
+        border-radius: 12px !important;
+        border: 1px solid #f0f0f8 !important;
+        padding: 0.75rem 1rem !important;
+        margin-bottom: 0.5rem !important;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important;
+    }
+
     /* ── Chat input ── */
     [data-testid="stChatInput"] textarea {
-        background: rgba(255,255,255,0.03) !important;
-        border: 1px solid rgba(255,255,255,0.09) !important;
-        border-radius: 10px !important;
-        color: #c9c9d3 !important;
-        font-family: 'DM Mono', monospace !important;
-        font-size: 0.82rem !important;
+        background: #ffffff !important;
+        border: 1.5px solid #e0e0f0 !important;
+        border-radius: 12px !important;
+        color: #1a1a2e !important;
+        font-family: 'Inter', sans-serif !important;
+        font-size: 0.88rem !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
     }
     [data-testid="stChatInput"] textarea:focus {
-        border-color: rgba(180,170,255,0.35) !important;
-        box-shadow: 0 0 0 3px rgba(180,170,255,0.07) !important;
+        border-color: #6366f1 !important;
+        box-shadow: 0 0 0 3px rgba(99,102,241,0.1) !important;
     }
-    [data-testid="stChatInputSubmitButton"] svg { fill: #7a76c8 !important; }
+    [data-testid="stChatInput"] textarea::placeholder { color: #c0c0d8 !important; }
+    [data-testid="stChatInputSubmitButton"] svg { fill: #6366f1 !important; }
 
-    /* Sidebar info box */
-    [data-testid="stSidebar"] .stAlert {
-        background: rgba(255,255,255,0.02) !important;
-        border: 1px solid rgba(255,255,255,0.07) !important;
-        border-radius: 8px !important;
-        font-size: 0.7rem !important;
-        color: #555568 !important;
-    }
-
+    /* ── Empty state ── */
     .empty-hint {
         text-align: center;
-        padding: 3rem 0 2rem;
-        color: #2a2a36;
-        font-size: 0.75rem;
+        padding: 4rem 0 2rem;
+        color: #d0d0e0;
+        font-size: 0.8rem;
         letter-spacing: 0.06em;
+        font-family: 'Inter', sans-serif;
     }
+
+    .stSpinner > div { border-top-color: #6366f1 !important; }
     </style>
     """, unsafe_allow_html=True)
 
-    # ── SESSION STATE ─────────────────────────────────────────────────────────
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
-    if "persona" not in st.session_state:
-        st.session_state.persona = "Funny"
-
-    # ── SIDEBAR ───────────────────────────────────────────────────────────────
+    # ── SIDEBAR CONTROLS ──────────────────────────────────────────────────────
     with st.sidebar:
-        st.markdown('<div class="model-section-label">Active Brain</div>', unsafe_allow_html=True)
+        st.markdown('<div class="mm-section-label" style="color:#3a3a5a;margin-top:1rem">Model</div>', unsafe_allow_html=True)
         selected_model_name = st.selectbox(
-            "Switch Brain",
+            "model",
             list(MODELS_CONFIG.keys()),
             label_visibility="collapsed"
         )
         llm = load_llm(selected_model_name)
-
-        st.markdown('<div style="height:1rem"></div>', unsafe_allow_html=True)
-
-        if st.button("↺  Clear conversation", use_container_width=True):
-            st.session_state.messages = []
+        st.markdown('<div style="height:0.75rem"></div>', unsafe_allow_html=True)
+        if st.button("↺  Clear Conversation", key="mm_clear"):
+            st.session_state.mm_messages = []
             st.rerun()
-
         st.markdown('<div style="height:0.5rem"></div>', unsafe_allow_html=True)
         st.info(f"**{selected_model_name}**\n\nMemory persists across model switches.")
 
-    # ── HEADER ────────────────────────────────────────────────────────────────
-    st.markdown("""
-    <div class="mm-header">
-        <div class="mm-title">Multi-Model Chat</div>
-        <div class="mm-subtitle">Switch models mid-conversation · Memory preserved</div>
-    </div>
-    """, unsafe_allow_html=True)
+    # ── PAGE HEADER ───────────────────────────────────────────────────────────
+    st.markdown('<div class="mm-page-title">Multi-Model Chat</div>', unsafe_allow_html=True)
+    st.markdown('<div class="mm-page-sub">Switch models mid-conversation · Memory preserved</div>', unsafe_allow_html=True)
 
-    # ── PERSONA SELECTOR ─────────────────────────────────────────────────────
-    st.markdown('<div class="model-section-label">Personality</div>', unsafe_allow_html=True)
+    # ── PERSONA CARDS ─────────────────────────────────────────────────────────
+    st.markdown('<div class="mm-section-label">Personality</div>', unsafe_allow_html=True)
 
     cols = st.columns(len(PERSONAS))
     for i, (name, info) in enumerate(PERSONAS.items()):
         with cols[i]:
-            label = f"{info['icon']}\n{name}"
-            if st.button(label, key=f"persona_{name}"):
-                st.session_state.persona = name
+            is_active = st.session_state.mm_persona == name
+            wrap_class = "persona-col-active" if is_active else "persona-col"
+            st.markdown(f'<div class="{wrap_class}">', unsafe_allow_html=True)
+            if st.button(f"{info['icon']}\n{name}", key=f"mm_persona_{name}", use_container_width=True):
+                st.session_state.mm_persona = name
                 st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
 
-    # ── STATUS BAR ───────────────────────────────────────────────────────────
-    current_persona = PERSONAS[st.session_state.persona]
+    # ── STATUS ────────────────────────────────────────────────────────────────
+    current = PERSONAS[st.session_state.mm_persona]
     st.markdown(f"""
-    <div class="status-bar">
-        <span class="status-pill">{current_persona['icon']} {st.session_state.persona}</span>
-        <span class="status-pill">⬡ {selected_model_name}</span>
+    <div class="status-row">
+        <span class="pill">{current['icon']} {st.session_state.mm_persona}</span>
+        <span class="pill">⬡ {selected_model_name}</span>
     </div>
-    <div class="divider-line"></div>
+    <div class="page-divider"></div>
     """, unsafe_allow_html=True)
 
-    # ── CHAT HISTORY ─────────────────────────────────────────────────────────
-    if not st.session_state.messages:
+    # ── CHAT ──────────────────────────────────────────────────────────────────
+    if not st.session_state.mm_messages:
         st.markdown(
-            f'<div class="empty-hint">{current_persona["icon"]} &nbsp; Ready — send a message to begin</div>',
+            f'<div class="empty-hint">{current["icon"]} Ready — send a message to begin</div>',
             unsafe_allow_html=True
         )
     else:
-        for message in st.session_state.messages:
+        for message in st.session_state.mm_messages:
             if isinstance(message, HumanMessage):
                 with st.chat_message("user"):
                     st.markdown(message.content)
@@ -375,20 +419,17 @@ def show():
                 with st.chat_message("assistant", avatar="⚡"):
                     st.markdown(message.content)
 
-    # ── INPUT ─────────────────────────────────────────────────────────────────
     if prompt := st.chat_input("Send a message…"):
-        st.session_state.messages.append(HumanMessage(content=prompt))
+        st.session_state.mm_messages.append(HumanMessage(content=prompt))
         with st.chat_message("user"):
             st.markdown(prompt)
-
-        system_instruction = SystemMessage(content=PERSONAS[st.session_state.persona]["prompt"])
-        full_prompt = [system_instruction] + st.session_state.messages
-
+        system_msg = SystemMessage(content=PERSONAS[st.session_state.mm_persona]["prompt"])
+        full_prompt = [system_msg] + st.session_state.mm_messages
         with st.chat_message("assistant", avatar="⚡"):
             with st.spinner(""):
                 try:
                     response = llm.invoke(full_prompt)
                     st.markdown(response.content)
-                    st.session_state.messages.append(AIMessage(content=response.content))
+                    st.session_state.mm_messages.append(AIMessage(content=response.content))
                 except Exception as e:
                     st.error(f"Error: {str(e)}")
