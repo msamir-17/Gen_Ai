@@ -1,5 +1,4 @@
 from dotenv import load_dotenv
-import os
 load_dotenv()
 
 import streamlit as st
@@ -8,13 +7,12 @@ from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 
 @st.cache_resource
 def get_model():
-    return ChatMistralAI(model="mistral-small-2603", temperature=0.9, max_tokens=100)
+    return ChatMistralAI(model="mistral-small-2603", temperature=0.9, max_tokens=500)  # bumped from 100 → 500
 
 def show():
     st.markdown('<div class="chat-title">⚡ Aura Chat</div>', unsafe_allow_html=True)
 
-
-    # ── Mode definitions ──────────────────────────────────────────────────────────
+    # ── Mode definitions ──────────────────────────────────────────────────────
     MODES = {
         "Funny":      {"icon": "😄", "desc": "Witty & lighthearted",  "prompt": "You are a hilarious and witty assistant. Crack jokes, use puns, and keep things fun while still being helpful."},
         "Aggressive": {"icon": "🔥", "desc": "Bold & no-nonsense",    "prompt": "You are an aggressive, blunt, brutally honest assistant. No sugarcoating. Direct, intense, zero tolerance for nonsense."},
@@ -24,22 +22,19 @@ def show():
     }
     MODE_NAMES = list(MODES.keys())
 
-    # ── Session state ─────────────────────────────────────────────────────────────
+    # ── Session state ─────────────────────────────────────────────────────────
     if "mode" not in st.session_state:
         st.session_state.mode = "Funny"
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
-    # ── Model ─────────────────────────────────────────────────────────────────────
-
     model = get_model()
 
-    # ── CSS ───────────────────────────────────────────────────────────────────────
+    # ── CSS ───────────────────────────────────────────────────────────────────
     st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Mono:wght@300;400&display=swap');
 
-    /* ── Base ── */
     html, body, [data-testid="stAppViewContainer"] {
         background: #07070f !important;
         font-family: 'DM Mono', monospace;
@@ -77,8 +72,25 @@ def show():
         color: #4b5563;
         letter-spacing: 0.15em;
         text-transform: uppercase;
-        margin-bottom: 2.2rem;
+        margin-bottom: 1.4rem;
     }
+
+    /* ── Free tier banner ── */
+    .free-tier-banner {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(245,158,11,0.07);
+        border: 1px solid rgba(245,158,11,0.22);
+        border-radius: 10px;
+        padding: 8px 14px;
+        font-size: 0.7rem;
+        color: #d97706;
+        margin-bottom: 1.4rem;
+        line-height: 1.5;
+        font-family: 'DM Mono', monospace;
+    }
+    .free-tier-banner strong { color: #fbbf24; }
 
     /* ── Section label ── */
     .section-label {
@@ -89,7 +101,7 @@ def show():
         margin-bottom: 0.8rem;
     }
 
-    /* ── Hide the real radio widget but keep it functional ── */
+    /* ── Radio cards ── */
     div[data-testid="stRadio"] > label { display: none !important; }
     div[data-testid="stRadio"] > div {
         display: flex !important;
@@ -114,16 +126,13 @@ def show():
         border-color: rgba(167,139,250,0.35) !important;
         background: rgba(167,139,250,0.07) !important;
     }
-    /* Selected card */
     div[data-testid="stRadio"] > div > label[data-selected="true"],
     div[data-testid="stRadio"] > div > label:has(input:checked) {
         border-color: rgba(167,139,250,0.65) !important;
         background: linear-gradient(135deg, rgba(109,40,217,0.25), rgba(236,72,153,0.14)) !important;
         box-shadow: 0 0 22px rgba(109,40,217,0.22) !important;
     }
-    /* Hide radio circle */
     div[data-testid="stRadio"] > div > label > div:first-child { display: none !important; }
-    /* Card text container */
     div[data-testid="stRadio"] > div > label > div:last-child {
         width: 100% !important;
         padding: 1rem 0.6rem 0.85rem !important;
@@ -133,7 +142,6 @@ def show():
         align-items: center !important;
         gap: 0.22rem !important;
     }
-    /* Radio label text — we'll override with p tags via markdown trick */
     div[data-testid="stRadio"] > div > label > div > p {
         font-family: 'Syne', sans-serif !important;
         font-size: 0.82rem !important;
@@ -222,13 +230,22 @@ def show():
     </style>
     """, unsafe_allow_html=True)
 
-    # ── Header ────────────────────────────────────────────────────────────────────
+    # ── Header ────────────────────────────────────────────────────────────────
     st.markdown('<div class="chat-subtitle">AI Assistant · Pick a personality</div>', unsafe_allow_html=True)
 
-    # ── Mode selector using st.radio (styled as cards) ───────────────────────────
+    # ── Free tier notice ──────────────────────────────────────────────────────
+    st.markdown("""
+    <div class="free-tier-banner">
+        ⚡ <strong>Free Tier Demo</strong> &nbsp;·&nbsp;
+        Powered by Mistral free tier &nbsp;·&nbsp;
+        May be slow under heavy traffic &nbsp;·&nbsp;
+        Responses capped at 500 tokens
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── Mode selector ─────────────────────────────────────────────────────────
     st.markdown('<div class="section-label">Assistant Mode</div>', unsafe_allow_html=True)
 
-    # Build labels with icon + name embedded
     labels = [f"{MODES[n]['icon']}  {n}\n{MODES[n]['desc']}" for n in MODE_NAMES]
 
     selected_label = st.radio(
@@ -239,14 +256,13 @@ def show():
         label_visibility="collapsed",
     )
 
-    # Parse selected mode name from label
     selected_mode = MODE_NAMES[labels.index(selected_label)]
     if selected_mode != st.session_state.mode:
         st.session_state.mode = selected_mode
         st.session_state.messages = []
         st.rerun()
 
-    # ── Active badge + clear ──────────────────────────────────────────────────────
+    # ── Active badge + clear ──────────────────────────────────────────────────
     current = MODES[st.session_state.mode]
     col_badge, col_space, col_clear = st.columns([5, 2, 1])
     with col_badge:
@@ -263,7 +279,7 @@ def show():
 
     st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
-    # ── Messages ──────────────────────────────────────────────────────────────────
+    # ── Messages ──────────────────────────────────────────────────────────────
     if not st.session_state.messages:
         st.markdown(
             f'<div class="empty-state">'
@@ -276,14 +292,14 @@ def show():
         for m in st.session_state.messages:
             if isinstance(m, HumanMessage):
                 html += (f'<div class="msg user"><div class="avatar user">U</div>'
-                        f'<div class="bubble user">{m.content}</div></div>')
+                         f'<div class="bubble user">{m.content}</div></div>')
             elif isinstance(m, AIMessage):
                 html += (f'<div class="msg bot"><div class="avatar bot">⚡</div>'
-                        f'<div class="bubble bot">{m.content}</div></div>')
+                         f'<div class="bubble bot">{m.content}</div></div>')
         html += '</div>'
         st.markdown(html, unsafe_allow_html=True)
 
-    # ── Input ─────────────────────────────────────────────────────────────────────
+    # ── Input ─────────────────────────────────────────────────────────────────
     if prompt := st.chat_input("Type a message…"):
         st.session_state.messages.append(HumanMessage(content=prompt))
         full_messages = [SystemMessage(content=current["prompt"])] + st.session_state.messages
@@ -291,62 +307,3 @@ def show():
             response = model.invoke(full_messages)
         st.session_state.messages.append(AIMessage(content=response.content))
         st.rerun()
-
-
-# import streamlit as st
-# from dotenv import load_dotenv
-# import os
-
-# from langchain_mistralai import ChatMistralAI
-# from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
-
-# # Load environment variables
-# load_dotenv()
-
-# # Initialize model
-# model = ChatMistralAI(model="mistral-small-2603", temperature=0.9, max_tokens=100)
-
-# # Streamlit UI
-# st.set_page_config(page_title="AI Chatbot", page_icon="🤖")
-# st.title("🤖 AI Chatbot")
-
-# # Initialize session state
-# if "messages" not in st.session_state:
-#     st.session_state.messages = [
-#         SystemMessage(content="You are a helpful and funny assistant.")
-#     ]
-
-# if "chat_history" not in st.session_state:
-#     st.session_state.chat_history = []
-
-# # Display chat history
-# for role, msg in st.session_state.chat_history:
-#     if role == "user":
-#         st.chat_message("user").write(msg)
-#     else:
-#         st.chat_message("assistant").write(msg)
-
-# # User input
-# user_input = st.chat_input("Type your message...")
-
-# if user_input:
-#     # Exit condition
-#     if user_input == "0":
-#         st.stop()
-
-#     # Display user message immediately
-#     st.chat_message("user").write(user_input)
-
-#     # Add user message
-#     st.session_state.messages.append(HumanMessage(content=user_input))
-#     st.session_state.chat_history.append(("user", user_input))
-
-#     # Get response
-#     response = model.invoke(st.session_state.messages)
-
-#     # Add AI response
-#     st.session_state.messages.append(AIMessage(content=response.content))
-#     st.session_state.chat_history.append(("assistant", response.content))
-
-#     # Display response
-#     st.chat_message("assistant").write(response.content)

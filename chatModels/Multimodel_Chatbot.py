@@ -19,15 +19,17 @@ PERSONAS = {
     "Professional": {"icon": "💼", "color": "#10b981", "prompt": "You are a professional, concise, and formal corporate assistant."},
 }
 
+MAX_TOKENS = 500  # Keep responses concise — saves free-tier quota
+
 @st.cache_resource
 def load_llm(model_option):
     config = MODELS_CONFIG[model_option]
     if config["provider"] == "mistral":
-        return ChatMistralAI(model=config["model"], temperature=0.8)
+        return ChatMistralAI(model=config["model"], temperature=0.8, max_tokens=MAX_TOKENS)
     elif config["provider"] == "google":
-        return ChatGoogleGenerativeAI(model=config["model"], temperature=0.8)
+        return ChatGoogleGenerativeAI(model=config["model"], temperature=0.8, max_output_tokens=MAX_TOKENS)
     elif config["provider"] == "groq":
-        return ChatGroq(model=config["model"], temperature=0.8)
+        return ChatGroq(model=config["model"], temperature=0.8, max_tokens=MAX_TOKENS)
 
 def show():
     # ── SESSION STATE ──────────────────────────────────────────────────────────
@@ -48,6 +50,7 @@ def show():
 
         selected_model_name = st.selectbox(
             "Switch Brain", list(MODELS_CONFIG.keys()),
+            index=1,  # Default: Gemini Flash (most generous free tier)
             label_visibility="visible"
         )
         llm = load_llm(selected_model_name)
@@ -71,6 +74,26 @@ def show():
             Currently using: <strong style="color:#c084fc">{selected_model_name}</strong><br>
             <span style="color:#8b8aab;font-size:0.72rem;">
             Memory preserved across model switches.</span>
+        </div>""", unsafe_allow_html=True)
+
+        # ── Free tier notice ──
+        st.markdown("""
+        <div style="
+            margin-top:10px;
+            background: rgba(245,158,11,0.08);
+            border: 1px solid rgba(245,158,11,0.25);
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 0.72rem;
+            color: #fbbf24;
+            line-height: 1.6;">
+            ⚡ <strong>Free Tier Demo</strong><br>
+            <span style="color:#d97706;">
+            • Gemini Flash — best for heavy traffic<br>
+            • Groq Llama — fastest responses<br>
+            • Mistral — may hit limits under load<br>
+            Responses capped at 500 tokens.
+            </span>
         </div>""", unsafe_allow_html=True)
 
     # ── PAGE CSS ───────────────────────────────────────────────────────────────

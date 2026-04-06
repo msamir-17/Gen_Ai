@@ -172,6 +172,25 @@ def show():
     <hr style="margin: 14px 0 20px 0;">
     """, unsafe_allow_html=True)
 
+    # ── Free tier notice ──────────────────────────────────────────────────────
+    st.markdown("""
+    <div style="
+        background: rgba(245,158,11,0.08);
+        border: 1px solid rgba(245,158,11,0.25);
+        border-radius: 10px;
+        padding: 9px 14px;
+        font-size: 0.75rem;
+        color: #fbbf24;
+        margin-bottom: 18px;
+        line-height: 1.6;">
+        ⚡ <strong>Free Tier Demo</strong> &nbsp;·&nbsp;
+        <span style="color:#d97706;">
+        Powered by Mistral free tier · May be slow under heavy traffic ·
+        Responses capped at 800 tokens
+        </span>
+    </div>
+    """, unsafe_allow_html=True)
+
     # ── INPUT ─────────────────────────────────────────────────────────────────
     st.markdown("""
     <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.13em;
@@ -197,7 +216,7 @@ def show():
         if not paragraph.strip():
             st.warning("⚠️ Please enter some movie text first.")
         else:
-            model  = ChatMistralAI(model="mistral-small-2603")
+            model  = ChatMistralAI(model="mistral-small-2603", max_tokens=800)
             parser = PydanticOutputParser(pydantic_object=Movie)
             prompt = ChatPromptTemplate.from_messages([
                 ("system", "Extract Movie Information from the paragraph.\nReturn ONLY valid JSON.\n{format_instructions}"),
